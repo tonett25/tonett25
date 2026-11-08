@@ -2,16 +2,721 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Мой сайт на iOS</title>
-  <link rel="stylesheet" href="style.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>2+5 // DESTROYED</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+  
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      width: 100%;
+      min-height: 100vh;
+      min-height: 100dvh;
+      background-color: #000000 !important;
+      color: #d6d6d6;
+      font-family: 'Space Mono', monospace;
+      overflow-x: hidden;
+      user-select: none;
+      position: relative;
+    }
+
+    /* ЭЛТ полосы и виньетка */
+    .scanlines {
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.7) 50%);
+      background-size: 100% 3px;
+      z-index: 30;
+      pointer-events: none;
+      opacity: 0.65;
+    }
+
+    .vignette {
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(circle at center, transparent 30%, #000000 95%);
+      z-index: 31;
+      pointer-events: none;
+    }
+
+    /* Глаза */
+    .bg-eyes {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    .eye-pair {
+      position: absolute;
+      display: flex;
+      gap: 12px;
+      opacity: 0.35;
+      filter: drop-shadow(0 0 5px rgba(255, 0, 0, 0.6));
+    }
+
+    .bg-eye {
+      width: 14px;
+      height: 7px;
+      background: #080808;
+      border-radius: 50%;
+      border-top: 1px solid #7a151b;
+      border-bottom: 1px solid #330b0e;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .bg-eye::after {
+      content: "";
+      width: 4px;
+      height: 4px;
+      background: #ff2a3b;
+      border-radius: 50%;
+      box-shadow: 0 0 6px #ff2a3b;
+    }
+
+    .eye-tl { top: 10%; left: 8%; animation: eyeBlink 5.5s infinite; }
+    .eye-tr { top: 18%; right: 9%; animation: eyeBlink 7s infinite 1.4s; }
+    .eye-bl { bottom: 14%; left: 10%; animation: eyeBlink 6.2s infinite 2.8s; }
+    .eye-br { bottom: 20%; right: 12%; animation: eyeBlink 8s infinite 0.5s; }
+
+    @keyframes eyeBlink {
+      0%, 93%, 100% { transform: scaleY(1); opacity: 0.35; }
+      95% { transform: scaleY(0.08); opacity: 0.05; }
+      97% { transform: scaleY(1); opacity: 0.35; }
+    }
+
+    /* Пробегающие тени */
+    .entity-corridor {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 3;
+      overflow: hidden;
+    }
+
+    .shadow-runner {
+      position: absolute;
+      width: 65px;
+      height: 140px;
+      background: radial-gradient(ellipse at center, rgba(15, 15, 18, 0.9) 0%, rgba(5, 5, 6, 0.5) 60%, transparent 100%);
+      filter: blur(5px) contrast(150%);
+      opacity: 0;
+      transform: skewX(-20deg);
+    }
+
+    .runner-1 {
+      top: 14%;
+      animation: dashAcross 7s infinite cubic-bezier(0.8, 0, 0.2, 1);
+    }
+
+    .runner-2 {
+      bottom: 25%;
+      animation: dashBack 9.5s infinite 3.5s cubic-bezier(0.8, 0, 0.2, 1);
+    }
+
+    @keyframes dashAcross {
+      0% { left: -100px; opacity: 0; }
+      20% { opacity: 0; }
+      24% { left: 20%; opacity: 0.45; filter: blur(6px) drop-shadow(0 0 10px #ff001e); }
+      27% { left: 120%; opacity: 0; }
+      100% { left: 120%; opacity: 0; }
+    }
+
+    @keyframes dashBack {
+      0% { right: -100px; opacity: 0; }
+      35% { opacity: 0; }
+      38% { right: 25%; opacity: 0.4; filter: blur(7px) drop-shadow(0 0 12px #330005); }
+      41% { right: 120%; opacity: 0; }
+      100% { right: 120%; opacity: 0; }
+    }
+
+    /* Основная оболочка */
+    .wrapper {
+      position: relative;
+      z-index: 25;
+      min-height: 100vh;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      padding: 35px 20px 35px;
+      text-align: center;
+      gap: 15px;
+    }
+
+    /* Звук */
+    .audio-tag {
+      position: fixed;
+      top: 15px;
+      right: 15px;
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 12px;
+      background: rgba(8, 8, 10, 0.85);
+      border: 1px solid #202026;
+      font-size: 10px;
+      letter-spacing: 2px;
+      color: #6d6d75;
+      cursor: pointer;
+      backdrop-filter: blur(5px);
+    }
+
+    .audio-tag.active {
+      color: #ff2222;
+      border-color: #610e14;
+      box-shadow: 0 0 14px rgba(255, 0, 0, 0.4);
+    }
+
+    /* Верх */
+    .header-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .terminal-line {
+      font-size: 9px;
+      color: #44434d;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+    }
+
+    .destroyed-title {
+      font-size: 12px;
+      color: #8c8994;
+      letter-spacing: 1.5px;
+      font-style: italic;
+    }
+
+    .weeping-box {
+      position: relative;
+      display: inline-block;
+      margin-top: 4px;
+    }
+
+    .weep-text {
+      font-family: 'Archivo Black', sans-serif;
+      font-size: 26px;
+      color: #1a1a1f;
+      letter-spacing: 2px;
+      display: block;
+    }
+
+    .tear-svg {
+      position: absolute;
+      top: 0;
+      left: -15%;
+      width: 130%;
+      height: 120%;
+      pointer-events: none;
+      filter: drop-shadow(0 0 5px rgba(200, 0, 0, 0.6));
+    }
+
+    /* 2+5 по центру */
+    .center-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin: 10px 0 5px;
+    }
+
+    .blur-stack {
+      position: relative;
+      display: inline-block;
+      animation: darkPulse 4.5s infinite ease-in-out;
+    }
+
+    .blur-stack .layer {
+      font-family: 'Archivo Black', sans-serif;
+      font-size: clamp(65px, 22vw, 125px);
+      line-height: 0.9;
+      letter-spacing: -2px;
+      color: #ffffff;
+      display: block;
+    }
+
+    .blur-stack .layer:not(.main-text) {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    .blur-stack .back-2 {
+      transform: translateX(-14px);
+      opacity: 0.25;
+      filter: blur(6px);
+    }
+
+    .blur-stack .back-1 {
+      transform: translateX(-7px);
+      opacity: 0.55;
+      filter: blur(3px);
+    }
+
+    .blur-stack .front-1 {
+      transform: translateX(7px);
+      opacity: 0.55;
+      filter: blur(3px);
+    }
+
+    .blur-stack .front-2 {
+      transform: translateX(14px);
+      opacity: 0.25;
+      filter: blur(6px);
+    }
+
+    .blur-stack .main-text {
+      position: relative;
+      z-index: 2;
+      text-shadow: 0 0 12px rgba(255, 255, 255, 0.85);
+    }
+
+    .sub-whisper {
+      font-size: 10px;
+      letter-spacing: 4px;
+      color: #47454f;
+      margin-top: 10px;
+      text-transform: uppercase;
+    }
+
+    @keyframes darkPulse {
+      0%, 100% { opacity: 1; }
+      30% { opacity: 0.95; }
+      31% { opacity: 0.1; }
+      33% { opacity: 0.85; }
+      34% { opacity: 0.05; }
+      36% { opacity: 1; }
+      75% { opacity: 0.9; }
+      76% { opacity: 0.3; }
+      78% { opacity: 1; }
+    }
+
+    /* ЛИСТАЮЩИЙСЯ СЛАЙДЕР С ФОТОГРАФИЯМИ */
+    .slider-box {
+      width: 100%;
+      max-width: 290px;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .slider-view {
+      width: 100%;
+      aspect-ratio: 4 / 3;
+      background: #09090c;
+      border: 1px solid #24242d;
+      box-shadow: 0 6px 25px rgba(0,0,0,0.9), inset 0 0 20px rgba(0,0,0,0.8);
+      position: relative;
+      overflow: hidden;
+      border-radius: 2px;
+    }
+
+    .slide-item {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      background-size: cover;
+      background-position: center;
+      filter: grayscale(80%) contrast(120%) brightness(85%);
+    }
+
+    .slide-item.active {
+      opacity: 1;
+    }
+
+    /* Заглушки для фото в стиле PSX / darkroom */
+    .slide-1 {
+      background-image: url('pic1.jpg');
+    }
+    .slide-2 {
+      background-image: url('pic2.jpg');
+    }
+    .slide-3 {
+      background-image: url('pic3.jpg');
+    }
+
+
+    .slide-caption {
+      background: rgba(4, 4, 6, 0.85);
+      border-top: 1px solid #1a1a22;
+      padding: 6px 10px;
+      font-size: 9px;
+      letter-spacing: 2px;
+      color: #8c1d28;
+      text-transform: uppercase;
+      display: flex;
+      justify-content: space-between;
+      backdrop-filter: blur(4px);
+    }
+
+    .slider-nav {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .nav-btn {
+      background: #09090d;
+      border: 1px solid #262633;
+      color: #9e9ba8;
+      font-family: monospace;
+      padding: 4px 12px;
+      font-size: 11px;
+      cursor: pointer;
+      border-radius: 2px;
+    }
+
+    .nav-btn:active {
+      color: #fff;
+      border-color: #8c1d28;
+    }
+
+    .slide-counter {
+      font-size: 10px;
+      letter-spacing: 2px;
+      color: #55535f;
+    }
+
+    /* ЗАМЕТНАЯ ЯРКАЯ КНОПКА «УБИТЬ СЕО 2+5» */
+    .footer-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+      margin-top: 5px;
+    }
+
+    .destroy-trigger {
+      background: #170104;
+      border: 2px solid #ff172b;
+      color: #ffffff;
+      font-family: 'Archivo Black', sans-serif;
+      font-size: clamp(14px, 4vw, 17px);
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      padding: 18px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      cursor: pointer;
+      outline: none;
+      width: 100%;
+      max-width: 330px;
+      border-radius: 4px;
+      touch-action: manipulation;
+      /* Яркое неоновое кровавое свечение */
+      box-shadow: 
+        0 0 25px rgba(255, 23, 43, 0.75), 
+        inset 0 0 16px rgba(255, 23, 43, 0.45);
+      animation: alertGlow 1.8s infinite ease-in-out;
+      transition: all 0.2s ease;
+    }
+
+    @keyframes alertGlow {
+      0%, 100% {
+        transform: scale(1);
+        border-color: #ff172b;
+        box-shadow: 0 0 22px rgba(255, 23, 43, 0.75), inset 0 0 15px rgba(255, 23, 43, 0.45);
+        text-shadow: 0 0 6px #ffffff;
+      }
+      50% {
+        transform: scale(1.03);
+        border-color: #ff5463;
+        box-shadow: 0 0 35px rgba(255, 23, 43, 1), inset 0 0 25px rgba(255, 23, 43, 0.75);
+        text-shadow: 0 0 12px #ffffff;
+      }
+    }
+
+    .destroy-trigger:active, .destroy-trigger.dead {
+      background: #360207;
+      border-color: #ffffff;
+      color: #ff2222;
+      box-shadow: 0 0 45px rgba(255, 23, 43, 1);
+      transform: scale(0.96);
+    }
+
+    .btn-cross {
+      font-size: 18px;
+      color: #ff172b;
+    }
+
+    .manifesto {
+      font-size: 9px;
+      letter-spacing: 3px;
+      color: #403e47;
+      text-transform: uppercase;
+    }
+
+    .glitch-shake {
+      animation: screenShake 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+    }
+
+    @keyframes screenShake {
+      10%, 90% { transform: translate3d(-4px, 3px, 0); }
+      20%, 80% { transform: translate3d(5px, -4px, 0); }
+      30%, 50%, 70% { transform: translate3d(-7px, 4px, 0); }
+      40%, 60% { transform: translate3d(6px, -3px, 0); }
+    }
+  </style>
 </head>
-<body>
-  <div class="card">
-    <div class="emoji">⚡</div>
-    <h1>Привет с iPhone!</h1>
-    <p>Сайт написан и запущен прямо с мобильного.</p>
-    <a href="#" class="btn">Подписаться</a>
+<body id="screen">
+  <div class="scanlines"></div>
+  <div class="vignette"></div>
+
+  <div class="bg-eyes">
+    <div class="eye-pair eye-tl">
+      <div class="bg-eye"></div>
+      <div class="bg-eye"></div>
+    </div>
+    <div class="eye-pair eye-tr">
+      <div class="bg-eye"></div>
+      <div class="bg-eye"></div>
+    </div>
+    <div class="eye-pair eye-bl">
+      <div class="bg-eye"></div>
+      <div class="bg-eye"></div>
+    </div>
+    <div class="eye-pair eye-br">
+      <div class="bg-eye"></div>
+      <div class="bg-eye"></div>
+    </div>
   </div>
+
+  <div class="entity-corridor">
+    <div class="shadow-runner runner-1"></div>
+    <div class="shadow-runner runner-2"></div>
+  </div>
+
+  <div class="audio-tag" id="soundBtn">
+    <span>✝</span>
+    <span class="audio-status">ВКЛЮЧИТЬ МУЗЫКУ</span>
+  </div>
+
+  <audio id="player" loop preload="auto">
+    <source src="track.mp3" type="audio/mpeg">
+  </audio>
+
+  <div class="wrapper">
+    <div class="header-box">
+      <div class="terminal-line">[ entity count: active // zone: 0025 ]</div>
+      <div class="destroyed-title">2+5 vol. 2 has been d3stroyed…lol..</div>
+      
+      <div class="weeping-box">
+        <span class="weep-text">2+5</span>
+        <svg class="tear-svg" viewBox="0 0 160 50">
+          <line x1="5" y1="26" x2="155" y2="24" stroke="#8b0000" stroke-width="3" stroke-linecap="round"/>
+          <line x1="8" y1="28" x2="150" y2="22" stroke="#ff1a1a" stroke-width="1.2" opacity="0.8"/>
+          <path d="M 38 26 Q 36 38 35 44 Q 35 48 37 48 Q 39 48 38 42 Z" fill="#8b0000"/>
+          <path d="M 82 25 Q 80 40 79 47 Q 79 50 81 50 Q 83 50 82 43 Z" fill="#b30000"/>
+          <path d="M 124 24 Q 122 35 121 42 Q 121 45 123 45 Q 125 45 124 38 Z" fill="#660000"/>
+        </svg>
+      </div>
+    </div>
+
+    <div class="center-content">
+      <div class="blur-stack">
+        <span class="layer back-2">2+5</span>
+        <span class="layer back-1">2+5</span>
+        <span class="layer main-text">2+5</span>
+        <span class="layer front-1">2+5</span>
+        <span class="layer front-2">2+5</span>
+      </div>
+      <div class="sub-whisper">vol. 2 // unreleased archive</div>
+    </div>
+
+    <!-- ЛИСТАЮЩИЕСЯ ФОТОГРАФИИ-ВЕЩДОКИ -->
+    <div class="slider-box">
+      <div class="slider-view" id="sliderView">
+        <div class="slide-item slide-1 active">
+          <div class="slide-caption">
+            <span>evidence_#01.raw</span>
+            <span>[CRIME SCENE]</span>
+          </div>
+        </div>
+        <div class="slide-item slide-2">
+          <div class="slide-caption">
+            <span>evidence_#02.raw</span>
+            <span>[CORRUPTED]</span>
+          </div>
+        </div>
+        <div class="slide-item slide-3">
+          <div class="slide-caption">
+            <span>evidence_#03.raw</span>
+            <span>[MORGUE SECTOR]</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="slider-nav">
+        <button class="nav-btn" id="prevSlide">&lt;</button>
+        <span class="slide-counter" id="slideIndicator">01 / 03</span>
+        <button class="nav-btn" id="nextSlide">&gt;</button>
+      </div>
+    </div>
+
+    <!-- ЯРКАЯ КНОПКА «УБИТЬ СЕО 2+5» -->
+    <div class="footer-box">
+      <button class="destroy-trigger" id="killTrigger" type="button">
+        <span class="btn-cross">☩</span>
+        <span class="btn-label">убить сео 2+5</span>
+        <span class="btn-cross">☩</span>
+      </button>
+      <div class="manifesto">no salvation // dead hearts club</div>
+    </div>
+  </div>
+
+  <script>
+    // Процедурный крик и помехи
+    function playScreechDeath() {
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const bufferSize = ctx.sampleRate * 0.45;
+        const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+        const data = buffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) {
+          data[i] = Math.random() * 2 - 1;
+        }
+
+        const noise = ctx.createBufferSource();
+        noise.buffer = buffer;
+
+        const filter = ctx.createBiquadFilter();
+        filter.type = 'bandpass';
+        filter.frequency.setValueAtTime(800, ctx.currentTime);
+        filter.frequency.exponentialRampToValueAtTime(3200, ctx.currentTime + 0.25);
+        filter.Q.value = 4;
+
+        const noiseGain = ctx.createGain();
+        noiseGain.gain.setValueAtTime(0.7, ctx.currentTime);
+        noiseGain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.45);
+
+        noise.connect(filter);
+        filter.connect(noiseGain);
+        noiseGain.connect(ctx.destination);
+        noise.start();
+
+        const osc = ctx.createOscillator();
+        const oscGain = ctx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(220, ctx.currentTime);
+        osc.frequency.linearRampToValueAtTime(880, ctx.currentTime + 0.08);
+        osc.frequency.exponentialRampToValueAtTime(70, ctx.currentTime + 0.45);
+
+        oscGain.gain.setValueAtTime(0.6, ctx.currentTime);
+        oscGain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.45);
+
+        osc.connect(oscGain);
+        oscGain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.45);
+      } catch (e) {}
+    }
+
+    // Аудио плеер
+    const soundBtn = document.getElementById('soundBtn');
+    const player = document.getElementById('player');
+    const audioStatus = soundBtn.querySelector('.audio-status');
+    let soundActive = false;
+
+    soundBtn.addEventListener('click', () => {
+      if (!soundActive) {
+        player.play().then(() => {
+          soundActive = true;
+          audioStatus.textContent = 'SOUND: HUZZY B';
+          soundBtn.classList.add('active');
+        }).catch(() => {
+          audioStatus.textContent = 'TRACK.MP3 NOT FOUND';
+        });
+      } else {
+        player.pause();
+        soundActive = false;
+        audioStatus.textContent = 'SOUND: MUTED';
+        soundBtn.classList.remove('active');
+      }
+    });
+
+    // Логика слайдера фото
+    const slides = document.querySelectorAll('.slide-item');
+    const indicator = document.getElementById('slideIndicator');
+    let currentSlide = 0;
+
+    function showSlide(index) {
+      slides.forEach((s, idx) => {
+        s.classList.toggle('active', idx === index);
+      });
+      indicator.textContent = `0${index + 1} / 0${slides.length}`;
+    }
+
+    document.getElementById('nextSlide').addEventListener('click', () => {
+      currentSlide = (currentSlide + 1) % slides.length;
+      showSlide(currentSlide);
+    });
+
+    document.getElementById('prevSlide').addEventListener('click', () => {
+      currentSlide = (currentSlide - 1 + slides.length) % slides.length;
+      showSlide(currentSlide);
+    });
+
+    // Свайп пальцем по экрану для перелистывания фото на iPhone
+    let touchStartX = 0;
+    const sliderView = document.getElementById('sliderView');
+
+    sliderView.addEventListener('touchstart', (e) => {
+      touchStartX = e.touches[0].clientX;
+    }, { passive: true });
+
+    sliderView.addEventListener('touchend', (e) => {
+      const touchEndX = e.changedTouches[0].clientX;
+      if (touchStartX - touchEndX > 40) {
+        currentSlide = (currentSlide + 1) % slides.length;
+        showSlide(currentSlide);
+      } else if (touchEndX - touchStartX > 40) {
+        currentSlide = (currentSlide - 1 + slides.length) % slides.length;
+        showSlide(currentSlide);
+      }
+    });
+
+    // Клик по кнопке «убить сео»
+    const killBtn = document.getElementById('killTrigger');
+    const screen = document.getElementById('screen');
+
+    killBtn.addEventListener('click', () => {
+      playScreechDeath();
+      screen.classList.add('glitch-shake');
+      killBtn.classList.add('dead');
+      killBtn.querySelector('.btn-label').textContent = 'ликвидирован...';
+
+      setTimeout(() => {
+        window.location.href = 'morgue.html';
+      }, 650);
+    });
+  </script>
 </body>
 </html>
